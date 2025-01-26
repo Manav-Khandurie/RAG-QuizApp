@@ -40,7 +40,7 @@ def generate_quiz_questions(db, num_questions: int = 10):
 
     questions = []
     for _ in range(num_questions):
-        query = "Generate a multiple-choice question based on the document."
+        query = "Generate a multiple-choice question based on the document.Use the contents properly"
         result = qa.run(query)
         
         # Parse the result into a structured format
