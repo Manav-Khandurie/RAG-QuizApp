@@ -5,11 +5,15 @@ from .schemas import DocumentUpload, QuizQuestionResponse
 from .utils import process_document, generate_quiz_questions
 import tempfile
 import os
+from langchain.vectorstores import PGVector
+from .embeddings import HuggingFaceAPIEmbeddings  # New import
 
 app = FastAPI()
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+
 
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
@@ -30,12 +34,14 @@ async def upload_document(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# app/main.py
 @app.post("/generate-quiz")
 async def generate_quiz(document_id: int):
     try:
+        embeddings = HuggingFaceAPIEmbeddings()
         db = PGVector(
             connection_string=os.getenv("DATABASE_URL"),
-            embedding_function=OpenAIEmbeddings()
+            embedding_function=embeddings
         )
 
         # Generate quiz questions
